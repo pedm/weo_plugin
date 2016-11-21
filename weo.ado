@@ -34,6 +34,16 @@ program weo
 	}
 	
 	****************************************************************************
+	* Check that newvar name does not yet exist
+	****************************************************************************	
+	cap confirm variable `namelist'
+	if _rc == 0{
+		* already exists
+		display as error "You are trying to generate a variable (`namelist') that already exists"
+		exit
+	}
+	
+	****************************************************************************
 	* Has WEO vintage already been downloaded and saved in tmp folder?
 	****************************************************************************	
 	local merge_text = "`weo_dir'" + "\long_" + "`vintage'" + ".dta"

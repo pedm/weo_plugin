@@ -39,7 +39,7 @@ program getweo
 	********************************************************************************
 	
 	local vintage_year = substr("`vintage_str'", -4, .)
-	di "`vintage_year'"
+	* di "`vintage_year'"
 	
 	local vintage_season_str = substr("`vintage_str'", 1, 1)
 	if "`vintage_season_str'" == "S"{
@@ -55,36 +55,17 @@ program getweo
 		* might be good to first try Oct, then try Sept, etc
 		local vintage_season_name = "Oct"
 	}
-	di "`vintage_season'"
+	* di "`vintage_season'"
 	
 	********************************************************************************
 	* Create URL to download WEO vintage from IMF website
 	********************************************************************************
 	
-	* TODO: what year is Sep not Oct
 	* TODO: do I need backup url for spring?
-	
 	local download_url "https://www.imf.org/external/pubs/ft/weo/`vintage_year'/0`vintage_season'/weodata/WEO`vintage_season_name'`vintage_year'all.xls"
 	local download_url2 "https://www.imf.org/external/pubs/ft/weo/`vintage_year'/0`vintage_season'/weodata/WEOSep`vintage_year'all.xls"
-	/*
-	local urllist = "`download_url'" + " `download_url2'"
 	
-	local exitdum = 1
-	foreach urll of local urllist{
-		tempfile weo_t
-		capture copy `urll' `weo_t'
-		if _rc == 7 {
-			local exitdum = 0
-			break
-	}
-	}
-	
-	if `exitdum' == 1 {
-		exit, clear
-	}
-	*/
-	
-	di "`download_url'"
+	* di "`download_url'"
 	
 	* WEO xls files are actually csv files, so import as a csv
 	* import delimited U:\GMS\Patrick\IMF_GrowthForecastErrors\Data\Raw\WEOApr2012all.xls
@@ -93,21 +74,22 @@ program getweo
 	* import delimited "Data/Raw/$f"
 	* capture noisily import delimited "`download_url'"
 	
-	di "Import: `download_url'"
+	di "Downloading csv from IMF website"
+	* di "Import: `download_url'"
 	capture noisily import delimited "`download_url'"
-	di _rc
+	* di _rc
 	
 	if _rc != 0 {
-		di "Import: `download_url2'"
+		* di "Import: `download_url2'"
 		capture noisily import delimited "`download_url2'"
-		di _rc
+		* di _rc
 		
 		if _rc != 0 {
 			* TODO: best way to error?
-			di "Unable to download WEO data from IMF website. Try downloading yourself using:"
+			display as error "Unable to download WEO data from IMF website."
+			di "Try downloading yourself using:"
 			di "`download_url'"
 			di "`download_url2'"
-			
 			exit
 		}
 	}
